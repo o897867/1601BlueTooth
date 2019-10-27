@@ -114,6 +114,14 @@ void loop()
               servoRight.writeMicroseconds(1500);
               servoLeft.writeMicroseconds(1500);
             }
+            if(recvChar == 'L'){
+              Serial.println("LightDetectStartWorking");
+              RecordFront();
+              RecordRight();
+              RecordFLeft();
+              getHighest();
+              turning();
+            }
             
         }
 
