@@ -50,9 +50,9 @@ Servo servoLeft;
 int LightSet[3];
 int dire=0;
 int target=0;
-int r;
-int g;
-int b;
+int r=4;
+int g=3;
+int b=2;
 
 void setup()
 {
@@ -64,6 +64,7 @@ void setup()
     pinMode(RxD, INPUT);
     pinMode(TxD, OUTPUT);
     pinMode(ConnStatus, INPUT);
+    
 
     //  Check whether Master and Slave are already connected by polling the ConnStatus pin (A1 on SeeedStudio v1 shield)
     //  This prevents running the full connection setup routine if not necessary.
@@ -118,7 +119,7 @@ void loop()
               Serial.println("LightDetectStartWorking");
               RecordFront();
               RecordRight();
-              RecordFLeft();
+              RecordLeft();
               getHighest();
               turning();
             }
@@ -166,15 +167,15 @@ void setupBlueToothConnection()
     Serial.println("The slave bluetooth is inquirable!");
 }
 void RecordFront(){
-  LightSet[0] = analogRead(0)
+  LightSet[0] = analogRead(0);
   Serial.println(LightSet[0]);
   Serial.println("FrontRecordFinished");
   servoRight.writeMicroseconds(1700);//turn to right
   servoLeft.writeMicroseconds(1700);
-  delay(750)
+  delay(750);
 }
 void RecordRight(){
-  LightSet[1] = analogRead(0)
+  LightSet[1] = analogRead(0);
   Serial.println(LightSet[1]);
   Serial.println("RightRecordFinished");
   servoRight.writeMicroseconds(1300);//turn to left
@@ -190,7 +191,7 @@ void RecordLeft(){
   delay(750);  
 }
 void getHighest(){
-   for (i = 0; i < 3; i = i + 1) {//get which direc have the highest value
+   for (int i = 0; i < 3; i = i + 1) {//get which direc have the highest value
     if (LightSet[i] > target ) {
       target = LightSet[i];
       dire=i;
@@ -249,4 +250,5 @@ void turning(){
     delay(500);
     tone(6,250,800);
 
+}
 }
