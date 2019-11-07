@@ -51,11 +51,9 @@ int LightSet[3];
 int dire=0;
 int target=0;
 int r=4;
-int b=3;
-int g=2;
-int WLeft = 7;
-//int WRight = 7;
-int WLeftRead;
+int g=3;
+int b=2;
+
 void setup()
 {
     servoRight.attach(13); 
@@ -66,11 +64,7 @@ void setup()
     pinMode(RxD, INPUT);
     pinMode(TxD, OUTPUT);
     pinMode(ConnStatus, INPUT);
-    pinMode(4,OUTPUT);
-    pinMode(3,OUTPUT);
-    pinMode(2,OUTPUT);
-    pinMode(5,OUTPUT);
-    pinMode(7,INPUT);
+    
 
     //  Check whether Master and Slave are already connected by polling the ConnStatus pin (A1 on SeeedStudio v1 shield)
     //  This prevents running the full connection setup routine if not necessary.
@@ -100,31 +94,26 @@ void loop()
 
     while(1)
     {
-        
         if(blueToothSerial.available())   // Check if there's any data sent from the remote Bluetooth shield
         {
             recvChar = blueToothSerial.read();
             Serial.print(recvChar);
-
-            
             if(recvChar =='u'){
               Serial.println("upwor");
-              servoRight.writeMicroseconds(1700);
-              servoLeft.writeMicroseconds(1300);
-
+              servoRight.writeMicroseconds(1300);
+              servoLeft.writeMicroseconds(1700);
+              blueToothSerial.println("BT");
             }
             if(recvChar =='b'){
               Serial.println("backward");
-              servoRight.writeMicroseconds(1300);
-              servoLeft.writeMicroseconds(1700);
-
+              servoRight.writeMicroseconds(1700);
+              servoLeft.writeMicroseconds(1300);
               
             }
             if(recvChar == 's'){
               Serial.println("Stop");
               servoRight.writeMicroseconds(1500);
               servoLeft.writeMicroseconds(1500);
-
             }
             if(recvChar == 'L'){
               Serial.println("LightDetectStartWorking");
@@ -133,8 +122,6 @@ void loop()
               RecordLeft();
               getHighest();
               turning();
-              
-              idle();
             }
             
         }
@@ -181,71 +168,46 @@ void setupBlueToothConnection()
 }
 void RecordFront(){
   LightSet[0] = analogRead(0);
-  blueToothSerial.println(LightSet[0]);
-  blueToothSerial.println("FrontRecordFinished");
-  servoRight.writeMicroseconds(1400);//turn to right
-  servoLeft.writeMicroseconds(1400);
+  Serial.println(LightSet[0]);
+  Serial.println("FrontRecordFinished");
+  servoRight.writeMicroseconds(1700);//turn to right
+  servoLeft.writeMicroseconds(1700);
   delay(750);
 }
 void RecordRight(){
   LightSet[1] = analogRead(0);
-  blueToothSerial.println(LightSet[1]);
-  blueToothSerial.println("RightRecordFinished");
-  servoRight.writeMicroseconds(1600);//turn to left
-  servoLeft.writeMicroseconds(1600);
+  Serial.println(LightSet[1]);
+  Serial.println("RightRecordFinished");
+  servoRight.writeMicroseconds(1300);//turn to left
+  servoLeft.writeMicroseconds(1300);
   delay(1500);  
 }
 void RecordLeft(){
   LightSet[2] = analogRead(0);
-  blueToothSerial.println(LightSet[2]);
-  blueToothSerial.println("LeftRecordFinished");
-  servoRight.writeMicroseconds(1400);//turn to left
-  servoLeft.writeMicroseconds(1400);
+  Serial.println(LightSet[2]);
+  Serial.println("LeftRecordFinished");
+  servoRight.writeMicroseconds(1700);//turn to left
+  servoLeft.writeMicroseconds(1700);
   delay(750);  
 }
 void getHighest(){
-if(LightSet[0]>LightSet[1]){
-  if(LightSet[1]>LightSet[2]){
-    dire = 0;
-  }
-}else{
-  if(LightSet[1]>LightSet[2]){
-    dire = 1;
-  }else{
-    dire = 2;
-  }
-  
-}
-}
-void Br(){
-  if(analogRead(7)){
-    blueToothSerial.println("BR");
-    servoRight.writeMicroseconds(1300);
-    servoLeft.writeMicroseconds(1700);
-    delay(750);
-    idle();
-  }
-}
-void idle(){
-  servoRight.writeMicroseconds(1500);
-  servoLeft.writeMicroseconds(1500);
+     
 }
 void turning(){
   if ( dire == 1){//if left have the highest value
     servoRight.writeMicroseconds(1700);//turn to left
     servoLeft.writeMicroseconds(1700);
     delay(750);
-    servoLeft.writeMicroseconds(1400);
-    servoRight.writeMicroseconds(1600);
+    servoLeft.writeMicroseconds(1700);
+    servoRight.writeMicroseconds(1300);
     delay(2000);
     
     digitalWrite(r,HIGH);//red light on
     digitalWrite(g,LOW);
     digitalWrite(b,LOW);
-    blueToothSerial.println("Chasing Left");
+    Serial.println("Chasing Left");
     tone(6,250,800);
     delay(500);
-    
     tone(6,250,800);
 
 
@@ -256,13 +218,13 @@ void turning(){
     servoLeft.writeMicroseconds(1300);//turn to right
     servoRight.writeMicroseconds(1300);
     delay(750);
-    servoLeft.writeMicroseconds(1400);
-    servoRight.writeMicroseconds(1600);
+    servoLeft.writeMicroseconds(1700);
+    servoRight.writeMicroseconds(1300);
     delay(2000);
     digitalWrite(r,LOW);
     digitalWrite(g,HIGH);//green light on
     digitalWrite(b,LOW);
-    blueToothSerial.println("CHasing Right");
+    Serial.println("CHasing Right");
     tone(6,250,800);
     delay(500);
     tone(6,250,800);
@@ -272,18 +234,16 @@ void turning(){
 
   }
   else if(dire==0){//if front side have highest value
-    servoLeft.writeMicroseconds(1400);
-    servoRight.writeMicroseconds(1600);//
+    servoLeft.writeMicroseconds(1700);
+    servoRight.writeMicroseconds(1300);//
     delay(2000);
     digitalWrite(r,LOW);
-    digitalWrite(b,HIGH);
-    digitalWrite(g,LOW);//blue light on
-    blueToothSerial.println("Chasing Front");
+    digitalWrite(g,LOW);
+    digitalWrite(b,HIGH);//blue light on
+    Serial.println("Chasing Front");
     tone(6,250,800);
     delay(500);
     tone(6,250,800);
 
 }
-
 }
-
